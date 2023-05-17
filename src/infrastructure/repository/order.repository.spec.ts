@@ -95,8 +95,8 @@ describe("Order repository test", () => {
     const productRepository = new ProductRepository();
     const product = new Product("123", "Product 1", 10);
     await productRepository.create(product);
-    const product2 = new Product("222", "Product 2", 20);
-    await productRepository.create(product2);
+    const productUpdated = new Product("222", "Product 2", 20);
+    await productRepository.create(productUpdated);
 
     const orderItem = new OrderItem(
       "1",
@@ -109,19 +109,18 @@ describe("Order repository test", () => {
     const order = new Order("123", "123", [orderItem]);
     const orderRepository = new OrderRepository();
     await orderRepository.create(order);
-
+    
     const orderUpdated = new OrderItem(
       "1",
-      product2.name,
-      product2.price,
-      product2.id,
+      productUpdated.name,
+      productUpdated.price,
+      productUpdated.id,
       2
     );
 
     order.changeOrderItem(orderUpdated);
-
-    //order.adicionarOrderItem(orderItem2);
-    orderRepository.update(order);
+    orderRepository.updateOrder(order);
+    orderRepository.updateItemOrder(order.items);
 
     const orderModel = await OrderModel.findOne({
       where: { id: order.id },
@@ -139,7 +138,7 @@ describe("Order repository test", () => {
           price: orderItem.price,
           quantity: orderItem.quantity,
           order_id: "123",
-          product_id: "123",
+          product_id: "222",
         },
       ],
     });

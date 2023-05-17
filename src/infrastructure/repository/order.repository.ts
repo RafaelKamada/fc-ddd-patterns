@@ -26,17 +26,10 @@ export default class OrderRepository{
     );
   }
 
-  async update(entity: Order): Promise<void> {
+  async updateOrder(entity: Order): Promise<void> {
     await OrderModel.update(
       {
         customer_id: entity.customerId,
-        items: entity.items.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          product_id: item.productId,
-          quantity: item.quantity,
-        })),
         total: entity.total(),
       },
       {
@@ -45,26 +38,24 @@ export default class OrderRepository{
         },
       }
     );
+  }
 
-    await entity.items.forEach(item => {
+  async updateItemOrder(entity: OrderItem[]): Promise<void> {
+    await entity.forEach(item => {
       OrderItemModel.update(
         {
-          id: item.id,
           product_id: item.productId,
-          order_id: entity.id,
           quantity: item.quantity,
           name: item.name,
           price: item.price,
         },
-        {
+        { 
           where: {
-            order_id: entity.id,
             id: item.id,
           }
         }
       );  
-    });
-    
+    });    
   }
 
   async find(id: string): Promise<Order> {
