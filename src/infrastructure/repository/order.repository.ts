@@ -1,12 +1,11 @@
-import Address from "../../domain/entity/address";
-import Customer from "../../domain/entity/customer";
 import Order from "../../domain/entity/order";
 import OrderItem from "../../domain/entity/order_item";
-import CustomerModel from "../db/sequelize/model/customer.model";
+import OrderRepositoryInterface from "../../domain/repository/order-repository.interface";
 import OrderItemModel from "../db/sequelize/model/order-item.model";
 import OrderModel from "../db/sequelize/model/order.model";
 
-export default class OrderRepository{
+export default class OrderRepository implements OrderRepositoryInterface{
+
   async create(entity: Order): Promise<void> {
     await OrderModel.create({
       id: entity.id,
@@ -26,7 +25,12 @@ export default class OrderRepository{
     );
   }
 
-  async updateOrder(entity: Order): Promise<void> {
+  async update(entity: Order): Promise<void> {
+    this.updateOrder(entity);
+    this.updateItemOrder(entity.items);
+  }
+
+  private async updateOrder(entity: Order): Promise<void> {
     await OrderModel.update(
       {
         customer_id: entity.customerId,
@@ -40,7 +44,7 @@ export default class OrderRepository{
     );
   }
 
-  async updateItemOrder(entity: OrderItem[]): Promise<void> {
+  private async updateItemOrder(entity: OrderItem[]): Promise<void> {
     await entity.forEach(item => {
       OrderItemModel.update(
         {

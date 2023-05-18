@@ -119,8 +119,7 @@ describe("Order repository test", () => {
     );
 
     order.changeOrderItem(orderUpdated);
-    orderRepository.updateOrder(order);
-    orderRepository.updateItemOrder(order.items);
+    orderRepository.update(order);
 
     const orderModel = await OrderModel.findOne({
       where: { id: order.id },
